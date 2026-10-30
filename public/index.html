@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AuraSense AI - Smart Room Monitoring, Appliance Duration Tracking, and Autonomous IoT Automation Dashboard.">
+  <title>AuraSense AI | Smart Room Monitoring & Automation</title>
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6 for IoT & Smart Home Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+  <!-- Chart.js for Telemetry & Energy Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body class="theme-dark">
+  <div class="app-layout">
+    
+    <!-- ==============================================
+         LEFT SIDEBAR NAVIGATION
+         ============================================== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="logo-icon-pulse">
+            <i class="fa-solid fa-microchip"></i>
+          </div>
+          <div class="brand-text">
+            <h2>AuraSense <span>AI</span></h2>
+            <p>Smart Room Controller</p>
+          </div>
+        </div>
+        <button class="mobile-sidebar-close" id="mobileSidebarClose" aria-label="Close sidebar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Live Room Selection Pill -->
+      <div class="room-selector-badge">
+        <i class="fa-solid fa-location-dot"></i>
+        <div class="room-info">
+          <span class="room-label">Active Zone</span>
+          <span class="room-name" id="currentRoomName">Master Suite & Study</span>
+        </div>
+        <span class="status-indicator-dot online" title="Sensors Online"></span>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="#dashboard" class="nav-item active" data-tab="dashboard">
+              <i class="fa-solid fa-gauge-high"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="#devices" class="nav-item" data-tab="devices">
+              <i class="fa-solid fa-plug-circle-bolt"></i>
+              <span>Devices</span>
+              <span class="badge" id="sidebarActiveCount">2 ON</span>
+            </a>
+          </li>
+          <li>
+            <a href="#automation" class="nav-item" data-tab="automation">
+              <i class="fa-solid fa-brain"></i>
+              <span>AI Automation</span>
+              <span class="badge badge-accent">Smart</span>
+            </a>
+          </li>
+          <li>
+            <a href="#energy" class="nav-item" data-tab="energy">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>Energy Analytics</span>
+            </a>
+          </li>
+          <li>
+            <a href="#schedules" class="nav-item" data-tab="schedules">
+              <i class="fa-solid fa-calendar-clock"></i>
+              <span>Schedules</span>
+              <span class="badge badge-muted" id="sidebarSchedCount">4</span>
+            </a>
+          </li>
+          <li>
+            <a href="#logs" class="nav-item" data-tab="logs">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <span>Activity Logs</span>
+            </a>
+          </li>
+          <li>
+            <a href="#hardware" class="nav-item" data-tab="hardware">
+              <i class="fa-solid fa-wifi"></i>
+              <span>Hardware & IoT</span>
+              <span class="pulse-tag" id="sidebarHwTag">ESP32</span>
+            </a>
+          </li>
+          <li>
+            <a href="#settings" class="nav-item" data-tab="settings">
+              <i class="fa-solid fa-sliders"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Sidebar Footer Hardware Quick Status -->
+      <div class="sidebar-footer">
+        <div class="hw-mini-card">
+          <div class="hw-mini-icon" id="sidebarHwIcon">
+            <i class="fa-solid fa-network-wired"></i>
+          </div>
+          <div class="hw-mini-details">
+            <span class="hw-mini-title" id="sidebarHwStatusTitle">Simulation Mode</span>
+            <span class="hw-mini-sub" id="sidebarHwSub">Realistic Virtual Edge</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==============================================
+         MAIN CONTENT AREA
+         ============================================== -->
+    <main class="main-wrapper">
+      
+      <!-- TOP NAVIGATION BAR -->
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button class="mobile-toggle-btn" id="mobileToggleBtn" aria-label="Toggle navigation">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="page-title-group">
+            <h1 id="pageTitle">Smart Room Overview</h1>
+            <p class="subtitle" id="pageSubtitle">Live telemetry, appliance automation & AI intelligence</p>
+          </div>
+        </div>
+
+        <div class="navbar-right">
+          <!-- Live Date & Clock -->
+          <div class="nav-widget time-widget">
+            <i class="fa-regular fa-clock"></i>
+            <span id="navLiveClock">--:--:--</span>
+            <span class="date-badge" id="navLiveDate">-- --- ----</span>
+          </div>
+
+          <!-- Hardware Connection Badge -->
+          <div class="nav-widget hardware-badge" id="hardwareStatusPill">
+            <span class="status-ping simulated"></span>
+            <span class="hw-label" id="hwBadgeText">Demo Simulated Data</span>
+            <button class="hw-switch-btn" id="quickHwToggleBtn" title="Switch between Simulated and Real ESP32">
+              <i class="fa-solid fa-sliders"></i>
+            </button>
+          </div>
+
+          <!-- Mode Selector Pill -->
+          <div class="mode-selector-container">
+            <span class="mode-label-hint">Mode:</span>
+            <div class="mode-pill-group" id="modeSelectorGroup">
+              <button class="mode-btn" data-mode="manual" id="modeBtnManual" title="Manual Control: AI only suggests">
+                <i class="fa-solid fa-hand"></i>
+                <span>Manual</span>
+              </button>
+              <button class="mode-btn active" data-mode="ai" id="modeBtnAi" title="AI Automatic: Intelligent automated control">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>AI Auto</span>
+              </button>
+              <button class="mode-btn" data-mode="scheduled" id="modeBtnScheduled" title="Scheduled: Strict timer automation">
+                <i class="fa-solid fa-calendar-day"></i>
+                <span>Schedule</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sound & Notifications -->
+          <button class="icon-action-btn" id="audioToggleBtn" title="Mute/Unmute Interaction Sounds">
+            <i class="fa-solid fa-volume-high" id="audioIcon"></i>
+          </button>
+          <button class="icon-action-btn notification-btn" id="notificationBtn" title="AI Alerts & Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span class="badge-dot" id="unreadNotificationDot"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT PANELS CONTAINER -->
+      <div class="content-container">
+
+        <!-- ==============================================
+             TAB 1: DASHBOARD (PRIMARY OVERVIEW)
+             ============================================== -->
+        <section class="tab-panel active" id="tab-dashboard">
+          
+          <!-- Notice Banner when in Demo/Simulated mode -->
+          <div class="sim-banner" id="simBanner">
+            <div class="banner-content">
+              <i class="fa-solid fa-circle-info"></i>
+              <span><strong>Simulation Mode Active:</strong> Dashboard is using realistic dynamic thermal and daylight physics. You can connect physical ESP8266/ESP32 hardware anytime in the Hardware tab.</span>
+            </div>
+            <div class="banner-actions">
+              <button class="btn btn-sm btn-ghost" id="openHwSimModal">Quick Hardware Simulator</button>
+              <button class="btn btn-sm btn-icon" id="dismissSimBanner" title="Dismiss">&times;</button>
+            </div>
+          </div>
+
+          <!-- SUMMARY TELEMETRY CARDS -->
+          <div class="summary-grid">
+            
+            <!-- Temperature Card -->
+            <div class="kpi-card temp-card">
+              <div class="kpi-icon-wrap temp-icon">
+                <i class="fa-solid fa-temperature-half"></i>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-header">
+                  <span class="kpi-label">Room Temperature</span>
+                  <span class="trend-badge" id="tempTrendBadge">
+                    <i class="fa-solid fa-arrow-trend-up"></i> <span id="tempTrendText">Rising</span>
+                  </span>
+                </div>
+                <div class="kpi-value-row">
+                  <span class="kpi-val" id="tempValue">28.4</span>
+                  <span class="kpi-unit" id="tempUnitDisplay">°C</span>
+                </div>
+                <div class="kpi-sub-info">
+                  <span>Comfort Target: <strong id="comfortTargetDisplay">24.0°C</strong></span>
+                  <span class="thermal-status-pill warn" id="thermalStatusPill">Fan Triggered</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Humidity Card -->
+            <div class="kpi-card humidity-card">
+              <div class="kpi-icon-wrap hum-icon">
+                <i class="fa-solid fa-droplet"></i>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-header">
+                  <span class="kpi-label">Relative Humidity</span>
+                  <span class="kpi-status-badge optimal" id="humidityStatusBadge">Ideal</span>
+                </div>
+                <div class="kpi-value-row">
+                  <span class="kpi-val" id="humidityValue">58</span>
+                  <span class="kpi-unit">% RH</span>
+                </div>
+                <div class="kpi-sub-info">
+                  <span>Air Quality: <strong>Good (AQI 42)</strong></span>
+                  <span>Mold Risk: <strong>Low</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Appliances Card -->
+            <div class="kpi-card devices-card">
+              <div class="kpi-icon-wrap dev-icon">
+                <i class="fa-solid fa-power-off"></i>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-header">
+                  <span class="kpi-label">Active Appliances</span>
+                  <span class="kpi-status-badge live" id="activeDevBadge">2 Active</span>
+                </div>
+                <div class="kpi-value-row">
+                  <span class="kpi-val" id="activeDevicesValue">2</span>
+                  <span class="kpi-unit">/ 6 Online</span>
+                </div>
+                <div class="kpi-sub-info">
+                  <span>Instant Draw: <strong id="instantWattsValue">83 W</strong></span>
+                  <span id="standbyCount">4 Standby</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total Daily Energy Card -->
+            <div class="kpi-card energy-card">
+              <div class="kpi-icon-wrap energy-icon">
+                <i class="fa-solid fa-bolt-lightning"></i>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-header">
+                  <span class="kpi-label">Total Energy Today</span>
+                  <span class="cost-estimate-badge" id="dailyCostBadge">₹36.38 Est.</span>
+                </div>
+                <div class="kpi-value-row">
+                  <span class="kpi-val" id="totalKwhValue">4.28</span>
+                  <span class="kpi-unit">kWh</span>
+                </div>
+                <div class="kpi-sub-info">
+                  <span>Tariff: <strong id="tariffDisplay">₹8.50/kWh</strong></span>
+                  <span class="savings-text"><i class="fa-solid fa-leaf"></i> Saved ~0.9 kWh</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Daylight & Ambient Light Card -->
+            <div class="kpi-card daylight-card">
+              <div class="kpi-icon-wrap daylight-icon">
+                <i class="fa-solid fa-sun" id="sunIcon"></i>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-header">
+                  <span class="kpi-label">Ambient Light</span>
+                  <span class="kpi-status-badge daylight" id="daylightBadge">Natural Light</span>
+                </div>
+                <div class="kpi-value-row">
+                  <span class="kpi-val" id="daylightLuxValue">780</span>
+                  <span class="kpi-unit">Lux</span>
+                </div>
+                <div class="kpi-sub-info">
+                  <span>Sunlight: <strong id="daylightPercentValue">78%</strong></span>
+                  <span id="lightAiStatusText">Daylight Saver Ready</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- APPLIANCES MONITORING & CONTROL SECTION -->
+          <div class="section-container">
+            <div class="section-header-bar">
+              <div class="section-title-wrap">
+                <h2><i class="fa-solid fa-plug-circle-bolt"></i> Connected Electrical Appliances</h2>
+                <p>Live status, continuous running duration timers, power draw, and remote control</p>
+              </div>
+              <div class="section-actions">
+                <button class="btn btn-sm btn-outline" id="masterOffBtn" title="Turn OFF all non-essential appliances">
+                  <i class="fa-solid fa-power-off"></i> All Off
+                </button>
+                <button class="btn btn-sm btn-primary" id="refreshDevicesBtn" title="Sync hardware state">
+                  <i class="fa-solid fa-arrows-rotate"></i> Sync State
+                </button>
+              </div>
+            </div>
+
+            <!-- APPLIANCE CARDS GRID -->
+            <div class="devices-grid" id="devicesGrid">
+              <!-- Dynamically populated by JS for high reliability & live state updating -->
+            </div>
+          </div>
+
+          <!-- VISUALIZATION CHARTS & AI INTELLIGENCE SPLIT ROW -->
+          <div class="charts-and-ai-grid">
+            
+            <!-- Left Chart: Live 24h Temperature & Humidity History -->
+            <div class="glass-panel chart-panel">
+              <div class="panel-header">
+                <div>
+                  <h3><i class="fa-solid fa-chart-area"></i> Room Climate History</h3>
+                  <p class="panel-sub">Continuous 24-hour temperature and humidity trend with comfort bands</p>
+                </div>
+                <div class="panel-controls">
+                  <span class="live-chart-pulse"></span>
+                  <span class="chart-legend-chip temp-chip">Temp (°C)</span>
+                  <span class="chart-legend-chip hum-chip">Humidity (%)</span>
+                </div>
+              </div>
+              <div class="chart-canvas-wrapper">
+                <canvas id="climateChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Right Panel: AI Automation & Recent Decisions -->
+            <div class="glass-panel ai-panel">
+              <div class="panel-header">
+                <div>
+                  <h3><i class="fa-solid fa-brain"></i> AI Automation Decision Engine</h3>
+                  <p class="panel-sub">Autonomous smart room reasoning and action explanations</p>
+                </div>
+                <span class="ai-mode-tag" id="aiModeHeaderTag">AI Auto Active</span>
+              </div>
+
+              <!-- AI Status Summary Card -->
+              <div class="ai-status-card" id="aiLiveStatusCard">
+                <div class="ai-pulse-ring">
+                  <i class="fa-solid fa-microchip-ai"></i>
+                </div>
+                <div class="ai-status-text">
+                  <h4 id="aiStatusTitle">Autonomous Guard Active</h4>
+                  <p id="aiStatusReason">Evaluating thermal sensors, ambient daylight levels, and appliance running durations every 1000ms.</p>
+                </div>
+              </div>
+
+              <!-- Smart Recommendations Banner -->
+              <div class="ai-recommendations-box">
+                <div class="rec-header">
+                  <span><i class="fa-solid fa-lightbulb"></i> Energy-Saving Recommendations</span>
+                  <span class="badge badge-accent" id="recCountBadge">1 Found</span>
+                </div>
+                <div class="rec-list" id="recommendationsList">
+                  <!-- Injected by JS -->
+                </div>
+              </div>
+
+              <!-- Recent AI Actions List -->
+              <div class="recent-ai-actions">
+                <div class="actions-header">
+                  <span>Recent Automated Actions</span>
+                  <a href="#logs" class="link-small" data-tab="logs">View Full Log &rarr;</a>
+                </div>
+                <div class="ai-action-feed" id="recentAiActionFeed">
+                  <!-- Injected by JS -->
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- BOTTOM ROW: ENERGY BREAKDOWN & APPLIANCE DURATION COMPARISON -->
+          <div class="secondary-charts-grid">
+            
+            <!-- Hourly Electricity Consumption Bar Chart -->
+            <div class="glass-panel chart-panel">
+              <div class="panel-header">
+                <div>
+                  <h3><i class="fa-solid fa-chart-column"></i> Today's Electricity Consumption (kWh)</h3>
+                  <p class="panel-sub">Hourly load distribution and peak demand tracking</p>
+                </div>
+                <span class="badge" id="peakHourBadge">Peak: 14:00 - 16:00</span>
+              </div>
+              <div class="chart-canvas-wrapper-sm">
+                <canvas id="energyBarChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Appliance Operating Duration Comparison Chart -->
+            <div class="glass-panel chart-panel">
+              <div class="panel-header">
+                <div>
+                  <h3><i class="fa-solid fa-clock-rotate-left"></i> Appliance Operating Duration</h3>
+                  <p class="panel-sub">Cumulative daily run time comparison across devices</p>
+                </div>
+                <span class="badge badge-muted">Today</span>
+              </div>
+              <div class="chart-canvas-wrapper-sm donut-wrapper">
+                <canvas id="durationDonutChart"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ==============================================
+             TAB 2: DEVICES (DETAILED MANAGEMENT)
+             ============================================== -->
+        <section class="tab-panel" id="tab-devices">
+          <div class="tab-header-row">
+            <div>
+              <h2>All Connected Electrical Appliances</h2>
+              <p>Granular parameters, power ratings, manual overrides, and hardware GPIO assignments</p>
+            </div>
+            <div class="filter-controls">
+              <button class="filter-btn active" data-filter="all">All (6)</button>
+              <button class="filter-btn" data-filter="on">Active (ON)</button>
+              <button class="filter-btn" data-filter="off">Standby (OFF)</button>
+            </div>
+          </div>
+
+          <div class="devices-detailed-list" id="detailedDevicesContainer">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- ==============================================
+             TAB 3: AI AUTOMATION RULES & EXPLAINABILITY
+             ============================================== -->
+        <section class="tab-panel" id="tab-automation">
+          <div class="tab-header-row">
+            <div>
+              <h2>AI Automation Rules & Decision Intelligence</h2>
+              <p>Configure autonomous trigger thresholds, hysteresis bands, daylight parameters, and safety limits</p>
+            </div>
+            <div class="automation-mode-badge-wrap">
+              <span class="mode-explainer" id="currentModeExplainer">Current Mode: AI Automatic (Autonomous execution with explanation logs)</span>
+            </div>
+          </div>
+
+          <div class="automation-rules-grid">
+            
+            <!-- Rule Card 1: Thermal Fan Control -->
+            <div class="rule-card">
+              <div class="rule-card-header">
+                <div class="rule-icon fan-rule">
+                  <i class="fa-solid fa-fan"></i>
+                </div>
+                <div class="rule-title-group">
+                  <h3>Ceiling Fan Thermal Automation</h3>
+                  <p>Autonomous temperature-based cooling regulation</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="ruleFanThermalToggle" checked>
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="rule-card-body">
+                <p class="rule-desc">Monitors room temperature continuously. If the temperature exceeds the activation threshold, the fan turns ON. When the temperature falls below the hysteresis floor, it turns OFF to save energy.</p>
+                
+                <div class="control-row">
+                  <label for="fanThresholdInput">Turn ON Threshold:</label>
+                  <div class="slider-val-wrap">
+                    <input type="range" id="fanThresholdInput" min="24" max="34" step="0.5" value="28.0">
+                    <span class="slider-val-badge" id="fanThresholdBadge">28.0°C</span>
+                  </div>
+                </div>
+
+                <div class="control-row">
+                  <label for="fanOffThresholdInput">Turn OFF Threshold (Hysteresis):</label>
+                  <div class="slider-val-wrap">
+                    <input type="range" id="fanOffThresholdInput" min="20" max="27" step="0.5" value="25.5">
+                    <span class="slider-val-badge" id="fanOffThresholdBadge">25.5°C</span>
+                  </div>
+                </div>
+
+                <div class="control-row">
+                  <label for="fanMinCycleInput">Minimum Switching Delay (Debounce):</label>
+                  <div class="slider-val-wrap">
+                    <input type="range" id="fanMinCycleInput" min="10" max="120" step="5" value="30">
+                    <span class="slider-val-badge" id="fanMinCycleBadge">30s</span>
+                  </div>
+                </div>
+
+                <div class="ai-reason-preview">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <span><strong>AI Decision Rationale:</strong> "Fan turned ON because room temperature (> 28.0°C) exceeded threshold while in AI mode."</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rule Card 2: Smart Daylight Light Automation -->
+            <div class="rule-card">
+              <div class="rule-card-header">
+                <div class="rule-icon light-rule">
+                  <i class="fa-solid fa-sun"></i>
+                </div>
+                <div class="rule-title-group">
+                  <h3>Smart Daylight Light Automation</h3>
+                  <p>Daytime unnecessary light detection & shutoff</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="ruleDaylightToggle" checked>
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="rule-card-body">
+                <p class="rule-desc">Detects whether room lights remain ON unnecessarily when there is sufficient natural daylight. Shuts them off automatically if they exceed the configured duration limit.</p>
+                
+                <div class="control-row">
+                  <label for="lightDaylightPercentInput">Daylight Sufficiency Threshold:</label>
+                  <div class="slider-val-wrap">
+                    <input type="range" id="lightDaylightPercentInput" min="30" max="90" step="5" value="60">
+                    <span class="slider-val-badge" id="lightDaylightPercentBadge">60% (500 Lux)</span>
+                  </div>
+                </div>
+
+                <div class="control-row">
+                  <label for="lightMaxDurationInput">Maximum Daytime Operating Time:</label>
+                  <div class="slider-val-wrap">
+                    <input type="range" id="lightMaxDurationInput" min="5" max="60" step="5" value="30">
+                    <span class="slider-val-badge" id="lightMaxDurationBadge">30 Minutes</span>
+                  </div>
+                </div>
+
+                <div class="control-row">
+                  <label>Daytime Active Window:</label>
+                  <div class="time-range-wrap">
+                    <input type="time" id="daylightStartTime" value="07:00">
+                    <span>to</span>
+                    <input type="time" id="daylightEndTime" value="18:00">
+                  </div>
+                </div>
+
+                <div class="ai-reason-preview">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <span><strong>AI Decision Rationale:</strong> "Lights turned OFF because sufficient daylight (78%) was detected and lights were active > 30 mins."</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rule Card 3: Extreme Heat AC Assist -->
+            <div class="rule-card">
+              <div class="rule-card-header">
+                <div class="rule-icon ac-rule">
+                  <i class="fa-solid fa-snowflake"></i>
+                </div>
+                <div class="rule-title-group">
+                  <h3>Emergency AC Heat Assist</h3>
+                  <p>Extreme temperature comfort safeguarding</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="ruleAcAssistToggle" checked>
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="rule-card-body">
+                <p class="rule-desc">If the room temperature exceeds the extreme threshold (even while the fan is active), the AI activates the Air Conditioner and sets it to optimal comfort mode.</p>
+                
+                <div class="control-row">
+                  <label for="acExtremeThresholdInput">Trigger Temperature Threshold:</label>
+                  <div class="slider-val-wrap">
+                    <input type="range" id="acExtremeThresholdInput" min="29" max="36" step="0.5" value="31.0">
+                    <span class="slider-val-badge" id="acExtremeThresholdBadge">31.0°C</span>
+                  </div>
+                </div>
+
+                <div class="control-row">
+                  <label for="acTargetSetpointInput">Target Cooling Setpoint:</label>
+                  <div class="slider-val-wrap">
+                    <input type="range" id="acTargetSetpointInput" min="20" max="26" step="1" value="23">
+                    <span class="slider-val-badge" id="acTargetSetpointBadge">23°C</span>
+                  </div>
+                </div>
+
+                <div class="control-row">
+                  <label>Compressor Protection Guard:</label>
+                  <span class="text-sm">Minimum 2 minutes between power toggles</span>
+                </div>
+
+                <div class="ai-reason-preview">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <span><strong>AI Decision Rationale:</strong> "AC turned ON because room temperature reached 31.2°C exceeding extreme heat safety limit."</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rule Card 4: Long-Run Appliance Overrun Protection -->
+            <div class="rule-card">
+              <div class="rule-card-header">
+                <div class="rule-icon fire-rule">
+                  <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="rule-title-group">
+                  <h3>Heavy Load Overrun Protection</h3>
+                  <p>Prevent unattended device fire hazards & power spikes</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="ruleOverrunToggle" checked>
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="rule-card-body">
+                <p class="rule-desc">Detects high-wattage appliances (such as the 2000W Water Heater or OLED TV) running for unusually long durations without activity, issuing warnings or shedding load.</p>
+                
+                <div class="control-row">
+                  <label for="geyserMaxMinsInput">Max Continuous Water Heater Run Time:</label>
+                  <div class="slider-val-wrap">
+                    <input type="range" id="geyserMaxMinsInput" min="15" max="60" step="5" value="45">
+                    <span class="slider-val-badge" id="geyserMaxMinsBadge">45 Minutes</span>
+                  </div>
+                </div>
+
+                <div class="control-row">
+                  <label for="tvMaxHoursInput">Max Continuous TV Run Time:</label>
+                  <div class="slider-val-wrap">
+                    <input type="range" id="tvMaxHoursInput" min="2" max="8" step="1" value="4">
+                    <span class="slider-val-badge" id="tvMaxHoursBadge">4 Hours</span>
+                  </div>
+                </div>
+
+                <div class="ai-reason-preview">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <span><strong>AI Decision Rationale:</strong> "Water Heater turned OFF after 45 mins continuous operation to prevent overheating and wastage."</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="btn-save-container">
+            <button class="btn btn-primary" id="saveAiRulesBtn">
+              <i class="fa-solid fa-floppy-disk"></i> Save & Apply Automation Rules
+            </button>
+          </div>
+        </section>
+
+        <!-- ==============================================
+             TAB 4: ENERGY ANALYTICS
+             ============================================== -->
+        <section class="tab-panel" id="tab-energy">
+          <div class="tab-header-row">
+            <div>
+              <h2>Energy Consumption & Cost Analytics</h2>
+              <p>Granular electricity tracking, tariff breakdowns, carbon estimates, and optimization metrics</p>
+            </div>
+            <div class="tariff-config-pill">
+              <span>Tariff:</span>
+              <strong id="analyticsTariffValue">₹8.50 per kWh</strong>
+            </div>
+          </div>
+
+          <!-- Energy KPI Cards -->
+          <div class="analytics-kpi-grid">
+            <div class="stat-box">
+              <span class="stat-label">Daily Consumption</span>
+              <div class="stat-number-row">
+                <span class="stat-num" id="statDailyKwh">4.28</span>
+                <span class="stat-unit">kWh</span>
+              </div>
+              <span class="stat-footer text-success"><i class="fa-solid fa-arrow-down"></i> 18% lower than average</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Estimated Daily Cost</span>
+              <div class="stat-number-row">
+                <span class="stat-num" id="statDailyCost">₹36.38</span>
+              </div>
+              <span class="stat-footer">Based on configured tariff</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Projected Monthly Bill</span>
+              <div class="stat-number-row">
+                <span class="stat-num" id="statMonthlyCost">₹1,091</span>
+              </div>
+              <span class="stat-footer text-accent">~128.4 kWh / month</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">AI Optimization Savings</span>
+              <div class="stat-number-row">
+                <span class="stat-num text-success" id="statAiSavings">₹248.50</span>
+              </div>
+              <span class="stat-footer text-success"><i class="fa-solid fa-leaf"></i> 29.2 kWh saved this month</span>
+            </div>
+          </div>
+
+          <!-- Detailed Appliance Energy Breakdown Table -->
+          <div class="glass-panel mt-4">
+            <div class="panel-header">
+              <div>
+                <h3><i class="fa-solid fa-table-list"></i> Appliance Consumption & Duration Breakdown</h3>
+                <p class="panel-sub">Real-time daily statistics for each individual electrical appliance</p>
+              </div>
+              <button class="btn btn-sm btn-outline" id="exportEnergyCsvBtn">
+                <i class="fa-solid fa-file-csv"></i> Export CSV
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table" id="energyBreakdownTable">
+                <thead>
+                  <tr>
+                    <th>Appliance</th>
+                    <th>Rated Power</th>
+                    <th>Current State</th>
+                    <th>Operating Duration Today</th>
+                    <th>Energy Used (kWh)</th>
+                    <th>Estimated Cost</th>
+                    <th>AI Optimization Status</th>
+                  </tr>
+                </thead>
+                <tbody id="energyTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==============================================
+             TAB 5: SCHEDULES
+             ============================================== -->
+        <section class="tab-panel" id="tab-schedules">
+          <div class="tab-header-row">
+            <div>
+              <h2>Configured Operating Schedules</h2>
+              <p>Automate appliance power states based on time-of-day, weekdays, and weekends</p>
+            </div>
+            <button class="btn btn-primary" id="openAddScheduleModalBtn">
+              <i class="fa-solid fa-plus"></i> Add New Schedule
+            </button>
+          </div>
+
+          <div class="schedules-grid" id="schedulesGridContainer">
+            <!-- Populated dynamically -->
+          </div>
+        </section>
+
+        <!-- ==============================================
+             TAB 6: ACTIVITY LOGS & EXPLAINABILITY
+             ============================================== -->
+        <section class="tab-panel" id="tab-logs">
+          <div class="tab-header-row">
+            <div>
+              <h2>Audit Trail & AI Decision Log</h2>
+              <p>Complete historical record of manual commands, schedule executions, and autonomous AI decisions with reasons</p>
+            </div>
+            <div class="log-actions-group">
+              <button class="btn btn-sm btn-outline" id="exportLogsCsvBtn">
+                <i class="fa-solid fa-download"></i> Export CSV
+              </button>
+              <button class="btn btn-sm btn-ghost" id="clearLogsBtn">
+                <i class="fa-solid fa-trash"></i> Clear Logs
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter and Search Row -->
+          <div class="log-filter-row">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="logSearchInput" placeholder="Search by appliance, reason, or keyword...">
+            </div>
+            <div class="filter-select-group">
+              <select id="logFilterType">
+                <option value="all">All Trigger Types</option>
+                <option value="AI Rule">AI Rules Only</option>
+                <option value="Manual Control">Manual Controls Only</option>
+                <option value="Schedule">Scheduled Only</option>
+                <option value="Mode Change">System Mode Changes</option>
+              </select>
+              <select id="logFilterDevice">
+                <option value="all">All Devices</option>
+                <option value="fan">Ceiling Fan</option>
+                <option value="ac">Air Conditioner</option>
+                <option value="lights">Ambient Lights</option>
+                <option value="tv">Smart TV</option>
+                <option value="purifier">Air Purifier</option>
+                <option value="geyser">Water Heater</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Logs Table -->
+          <div class="glass-panel">
+            <div class="table-responsive">
+              <table class="custom-table" id="activityLogsTable">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Appliance</th>
+                    <th>State Transition</th>
+                    <th>Mode</th>
+                    <th>Trigger Source</th>
+                    <th>AI Rationale / Reason</th>
+                    <th>Hardware Status</th>
+                  </tr>
+                </thead>
+                <tbody id="logsTableBody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==============================================
+             TAB 7: HARDWARE & IOT INTEGRATION
+             ============================================== -->
+        <section class="tab-panel" id="tab-hardware">
+          <div class="tab-header-row">
+            <div>
+              <h2>ESP8266 / ESP32 Hardware Integration & MQTT Bridge</h2>
+              <p>Connect physical microcontrollers, DHT22 sensors, LDR daylight sensors, and relay boards</p>
+            </div>
+            <div class="hardware-connection-state-card" id="hardwareStatusDetailCard">
+              <span class="status-indicator-dot simulated" id="hwDetailDot"></span>
+              <span id="hwDetailStatusText">Simulated Edge Controller</span>
+            </div>
+          </div>
+
+          <!-- Hardware Architecture Diagram Card -->
+          <div class="hardware-architecture-card">
+            <div class="arch-col">
+              <h4>1. Physical Edge Device</h4>
+              <p>ESP32 / ESP8266 DevKit</p>
+              <ul>
+                <li><i class="fa-solid fa-microchip"></i> GPIO 4: DHT22 (Temp & Humidity)</li>
+                <li><i class="fa-solid fa-sun"></i> GPIO 34: LDR Ambient Light Sensor</li>
+                <li><i class="fa-solid fa-toggle-on"></i> GPIO 26, 27, 14, 33: 4-Ch Relays</li>
+              </ul>
+            </div>
+            <div class="arch-arrow">
+              <i class="fa-solid fa-arrow-right-arrow-left"></i>
+              <span>HTTP / MQTT / WS</span>
+            </div>
+            <div class="arch-col">
+              <h4>2. Dashboard Server</h4>
+              <p>Node.js & WebSocket Engine</p>
+              <ul>
+                <li><i class="fa-solid fa-server"></i> REST API: <code>/api/hardware/telemetry</code></li>
+                <li><i class="fa-solid fa-bolt"></i> Bidirectional WS: <code>ws://localhost:3000</code></li>
+                <li><i class="fa-solid fa-shield"></i> Hysteresis & Safety Protections</li>
+              </ul>
+            </div>
+            <div class="arch-arrow">
+              <i class="fa-solid fa-arrow-right-arrow-left"></i>
+              <span>Reactive UI</span>
+            </div>
+            <div class="arch-col">
+              <h4>3. Web Dashboard</h4>
+              <p>AuraSense Interactive UI</p>
+              <ul>
+                <li><i class="fa-solid fa-desktop"></i> Live Ticking Duration Timers</li>
+                <li><i class="fa-solid fa-wand-magic-sparkles"></i> Autonomous AI Decision Rules</li>
+                <li><i class="fa-solid fa-chart-pie"></i> Energy Analytics & Schedules</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Interactive Hardware Testing & Simulator Controls -->
+          <div class="glass-panel mt-4">
+            <div class="panel-header">
+              <div>
+                <h3><i class="fa-solid fa-flask-vial"></i> Hardware Injection & Testing Playground</h3>
+                <p class="panel-sub">Simulate physical button presses, temperature spikes, and daylight fluctuations to verify AI automation reactions</p>
+              </div>
+            </div>
+
+            <div class="sim-controls-grid">
+              
+              <div class="sim-control-item">
+                <label>Simulate Temperature Spike (°C):</label>
+                <div class="slider-val-wrap">
+                  <input type="range" id="simTempSlider" min="18" max="42" step="0.5" value="28.4">
+                  <span class="slider-val-badge" id="simTempBadge">28.4°C</span>
+                </div>
+                <div class="quick-preset-btns">
+                  <button class="btn btn-xs btn-outline" data-temp="23.0">Cool (23°C)</button>
+                  <button class="btn btn-xs btn-outline" data-temp="29.5">Warm (29.5°C Fan On)</button>
+                  <button class="btn btn-xs btn-outline" data-temp="33.0">Hot (33°C AC On)</button>
+                </div>
+              </div>
+
+              <div class="sim-control-item">
+                <label>Simulate Daylight Level (Lux):</label>
+                <div class="slider-val-wrap">
+                  <input type="range" id="simLuxSlider" min="0" max="1200" step="20" value="780">
+                  <span class="slider-val-badge" id="simLuxBadge">780 Lux</span>
+                </div>
+                <div class="quick-preset-btns">
+                  <button class="btn btn-xs btn-outline" data-lux="40">Night (40 Lux)</button>
+                  <button class="btn btn-xs btn-outline" data-lux="450">Cloudy (450 Lux)</button>
+                  <button class="btn btn-xs btn-outline" data-lux="950">Bright Sun (950 Lux)</button>
+                </div>
+              </div>
+
+              <div class="sim-control-item">
+                <label>Simulate Hardware Edge Mode:</label>
+                <div class="toggle-row">
+                  <button class="btn btn-sm btn-primary" id="btnSetSimulated">
+                    <i class="fa-solid fa-laptop-code"></i> Virtual Edge
+                  </button>
+                  <button class="btn btn-sm btn-outline" id="btnSetPhysicalHw">
+                    <i class="fa-solid fa-microchip"></i> Real ESP32 Edge
+                  </button>
+                </div>
+                <p class="text-xs text-muted mt-2">When Real ESP32 is selected, dashboard listens for live incoming POST requests from the microcontroller.</p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Arduino Sketch Preview & Download -->
+          <div class="glass-panel mt-4">
+            <div class="panel-header">
+              <div>
+                <h3><i class="fa-solid fa-code"></i> Production Ready ESP32 C++ Firmware Sketch</h3>
+                <p class="panel-sub">Flash directly to your ESP32 board using Arduino IDE or PlatformIO</p>
+              </div>
+              <button class="btn btn-sm btn-secondary" id="copyArduinoCodeBtn">
+                <i class="fa-regular fa-copy"></i> Copy Firmware Code
+              </button>
+            </div>
+            <pre class="code-block-preview"><code id="arduinoCodeDisplay">// Loading Arduino sketch...</code></pre>
+          </div>
+        </section>
+
+        <!-- ==============================================
+             TAB 8: SETTINGS
+             ============================================== -->
+        <section class="tab-panel" id="tab-settings">
+          <div class="tab-header-row">
+            <div>
+              <h2>System Settings & Preferences</h2>
+              <p>Configure regional units, electricity tariffs, simulation engine parameters, and sound preferences</p>
+            </div>
+          </div>
+
+          <div class="settings-form-container">
+            <div class="settings-group">
+              <h3>Localization & Units</h3>
+              <div class="form-row">
+                <label for="tempUnitSelect">Temperature Display Unit:</label>
+                <select id="tempUnitSelect">
+                  <option value="C">Celsius (°C)</option>
+                  <option value="F">Fahrenheit (°F)</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <label for="currencySelect">Currency Symbol:</label>
+                <select id="currencySelect">
+                  <option value="₹">₹ (INR - Indian Rupee)</option>
+                  <option value="$">$ (USD - US Dollar)</option>
+                  <option value="€">€ (EUR - Euro)</option>
+                  <option value="£">£ (GBP - British Pound)</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <label for="tariffRateInput">Electricity Tariff Rate (per kWh):</label>
+                <div class="input-with-affix">
+                  <span class="affix" id="tariffCurrencyAffix">₹</span>
+                  <input type="number" id="tariffRateInput" step="0.1" min="0" value="8.50">
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <h3>Simulation & Engine</h3>
+              <div class="form-row">
+                <label for="simSpeedSelect">Simulation Speed Accelerator:</label>
+                <select id="simSpeedSelect">
+                  <option value="1">1x (Real-time speed)</option>
+                  <option value="5">5x (Accelerated testing)</option>
+                  <option value="10">10x (High-speed simulation)</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <label for="soundEffectsCheckbox">Audio Micro-Interactions:</label>
+                <input type="checkbox" id="soundEffectsCheckbox" checked>
+              </div>
+            </div>
+
+            <div class="btn-save-container">
+              <button class="btn btn-primary" id="saveSettingsBtn">
+                <i class="fa-solid fa-check"></i> Save Preferences
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div> <!-- /.content-container -->
+    </main>
+  </div> <!-- /.app-layout -->
+
+  <!-- ==============================================
+       ADD / EDIT SCHEDULE MODAL
+       ============================================== -->
+  <div class="modal-overlay" id="scheduleModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="scheduleModalTitle">Create Operating Schedule</h3>
+        <button class="modal-close-btn" id="closeScheduleModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="schedNameInput">Schedule Name:</label>
+          <input type="text" id="schedNameInput" placeholder="e.g., Morning Fan Air Circulation">
+        </div>
+        <div class="form-group">
+          <label for="schedDeviceSelect">Target Appliance:</label>
+          <select id="schedDeviceSelect">
+            <option value="fan">Ceiling Fan</option>
+            <option value="ac">Smart Air Conditioner</option>
+            <option value="lights">Ambient Ceiling Lights</option>
+            <option value="tv">Smart Television</option>
+            <option value="purifier">HEPA Air Purifier</option>
+            <option value="geyser">Water Heater</option>
+          </select>
+        </div>
+        <div class="form-row-split">
+          <div class="form-group">
+            <label for="schedActionSelect">Action:</label>
+            <select id="schedActionSelect">
+              <option value="ON">Turn ON</option>
+              <option value="OFF">Turn OFF</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="schedTimeInput">Trigger Time (24h):</label>
+            <input type="time" id="schedTimeInput" value="07:00">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Active Days:</label>
+          <div class="days-checkbox-group">
+            <label><input type="checkbox" name="schedDay" value="mon" checked> Mon</label>
+            <label><input type="checkbox" name="schedDay" value="tue" checked> Tue</label>
+            <label><input type="checkbox" name="schedDay" value="wed" checked> Wed</label>
+            <label><input type="checkbox" name="schedDay" value="thu" checked> Thu</label>
+            <label><input type="checkbox" name="schedDay" value="fri" checked> Fri</label>
+            <label><input type="checkbox" name="schedDay" value="sat"> Sat</label>
+            <label><input type="checkbox" name="schedDay" value="sun"> Sun</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelScheduleBtn">Cancel</button>
+        <button class="btn btn-primary" id="saveScheduleBtn">Save Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       TOAST NOTIFICATION CONTAINER
+       ============================================== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Core JavaScript Modules -->
+  <script src="js/audio.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/simulation.js"></script>
+  <script src="js/ai-engine.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/hardware.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
